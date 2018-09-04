@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<script>
+		/*
+			转换类型为字符串，包括空字符串，字符串开始有数字，字符串开始有空格，字符串中不包含数字
+		*/
+		console.log(Number(""));			//0
+		console.log(parseInt(""));			//NAN
+
+		console.log(Number(" "));			//0
+		console.log(parseInt(" "));			//NAN
+
+
+		console.log(Number("12aa"));		//NAN
+		console.log(parseInt("12aa"));		//12
+
+		console.log(Number("0012"));		//12
+		console.log(parseInt("0012aa"));	//12
+
+		console.log(Number("  13aa"));		//NAN
+		console.log(parseInt("  13aa"));	//13
+
+		console.log(Number("abcd"));		//NAN
+		console.log(parseInt("abcd"));		//NAN
+
+		/*
+			转换类型为布尔值
+		*/
+		console.log(Number(true));			//1
+		console.log(parseInt(true));		//NAN
+		console.log(Number(false));			//0
+		console.log(parseInt(false));		//NAN
+
+
+	</script>
+</head>
+<body>
+	
+</body>
+</html>

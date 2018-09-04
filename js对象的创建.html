@@ -4,91 +4,101 @@
 	<meta charset="UTF-8">
 	<title>Document</title>
 	<script>
-		//1:通过对象字面量来创建对象
-		//假设我们要创建一个人的实例，他有name和age两个属性
-		/*
-		const person = {
-			name:"",
-			age:''
-		}
-		const p1 = {};
-		p1.name = "zhangsan";
-		p1.age = 20;
-		const p2 = {};
-		p2.name = "lisi";
-		p2.age = 21;
-		console.log(p1);
-		console.log(p2);
-		*/
-		//通过对象字面量这种方式我们创建了一个p1对象，但是如果我们要创建多个对象写起来就非常的麻烦，所以我们可以写一个函数来复用创建对象的过程来解决这个问题
-		//2：工厂方式
-		/*function Person(name, age) {
-			return {
-				name:name,
-				age:age
+		{
+			//1:通过对象字面量来创建对象
+			//假设我们要创建一个人的实例，他有name和age两个属性
+			const person = {
+				name:"",
+				age:''
 			}
+			const p1 = {};
+			p1.name = "zhangsan";
+			p1.age = 20;
+			const p2 = {};
+			p2.name = "lisi";
+			p2.age = 21;
+			console.log(p1);
+			console.log(p2);
+			//通过对象字面量这种方式我们创建了一个p1对象，但是如果我们要创建多个对象写起来就非常的麻烦，所以我们可以写一个函数来复用创建对象的过程来解决这个问题
 		}
-		const p1 = Person('lisi', 21);
-		const p2 = Person('wangwu', 19);
-		console.log(p1);
-		console.log(p2);*/
-		//工厂方式使创建对象的变的快捷，但是还存在一个问题，就是p1和p2之间没有内在的联系，不能反映出他们是同一个原型对象的实例
-		//3：构造函数方式
-		/*function Person(name, age) {
-			this.name = name;
-			this.age = age;
+		{
+			//2：工厂方式
+			function Person(name, age) {
+				return {
+					name:name,
+					age:age
+				}
+			}
+			const p1 = Person('lisi', 21);
+			const p2 = Person('wangwu', 19);
+			console.log(p1);
+			console.log(p2);
+			//工厂方式使创建对象的变的快捷，但是还存在一个问题，就是p1和p2之间没有内在的联系，不能反映出他们是同一个原型对象的实例
 		}
-		const p1 = new Person('lisi', 21);
-		const p2 = new Person('zhangsan', 22);*/
-		/*构造函数和普通函数没有什么区别，只是在内部使用this关键字来建立对象的属性或方法，当然要想使这些属性和方法能够正确的加到我们所创建的对象上在调用的时候我们要使用new关键字来调用构造函数，他大致经过四个步骤
-			1)创建一个新对象					var obj = {};
-			2)将构造函数的作用域赋给新对象		obj.__proto__ = Person.prototype;
-			3)执行函数中的代码					Person.call(obj);
-			4)返回这个对象						return obj;
-		通过构造函数创建的对象都有一个constructor属性，他指向构造函数
-		*/
-		//console.log(p1.constructor === Person);			//true
-		/**使用构造函数创建对象虽然好用，但是他也有缺点例如：**/
-		/*function Person(name, age) {
-			this.name = name;
-			this.age = age;
-			this.sex = "男";
-			this.eat = function () {
+		{
+			//3：构造函数方式
+			function Person(name, age) {
+				this.name = name;
+				this.age = age;
+			}
+			const p1 = new Person('lisi', 21);
+			const p2 = new Person('zhangsan', 22);
+			/*构造函数和普通函数没有什么区别，只是在内部使用this关键字来建立对象的属性或方法，当然要想使这些属性和方法能够正确的加到我们所创建的对象上在调用的时候我们要使用new关键字来调用构造函数，他大致经过四个步骤
+				1)创建一个新对象					var obj = {};
+				2)将构造函数的作用域赋给新对象		obj.__proto__ = Person.prototype;
+				3)执行函数中的代码					Person.call(obj);
+				4)返回这个对象						return obj;
+			通过构造函数创建的对象都有一个constructor属性，他指向构造函数
+			*/
+			console.log(p1.constructor === Person);			//true
+			/**使用构造函数创建对象虽然好用，但是他也有缺点例如：**/
+			{
+				function Person(name, age) {
+					this.name = name;
+					this.age = age;
+					this.sex = "男";
+					this.eat = function () {
+						console.log('吃');
+					}
+				}
+				const p1 = new Person('lisi', 35);
+				const p2 = new Person('zhangsan', 32);
+				console.log(p1.eat === p2.eat);						//false
+				/**我们为这个对象加了一个sex属性，并让他的值等于男，接着我们创建了一个吃的方法，也就是说我们创建出的对象中sex属性和eat方法是共用的，但是我们每次调用构造函数创建对象时他都会为这些公共的属性和方法申请内存空间，这样就造成了资源的浪费，所以我们有了下面的这用创建对象的方法**/
+			}
+			
+		}
+		{
+			//4：原型方式
+			function Person(name, age) {
+				this.name = name;
+				this.age = age;
+			}
+			Person.prototype.sex = "男";
+			Person.prototype.eat = function () {
 				console.log('吃');
 			}
+			const p1 = new Person('zhangsan', 24);
+			const p2 = new Person('lisi', 25);
+			p1.eat();											//吃
+			console.log(p1.eat === p2.eat);						//true
+			//通过在原型中添加公共的属性使各个实例都可以访问到
+			//这就是我们创建对象时用到的大多数方法，下面我们来说一下怎样判断一个对象中是否具有某些属性或方法，
+			//javascript中提供了一个检测某个属性是否属于该对象的运算符in
+			console.log('name' in p1);							//true
+			console.log('eat' in p1);							//true
+			//in运算符只检测属性或方法是否存在于对象中，对于他是来自原型中的还是实例中的他是分辨不出来的，当然在每个对象中都有一个hasOwnProperty方法来识别对象的属性或方法来自原型还是实例本身
+			console.log(Person.hasOwnProperty('name'));			//true
+			console.log(Person.hasOwnProperty('sex'));			//false
+			console.log(Person.hasOwnProperty('job'));			//false
+			//可以看到当某个属性或方法不存在时hasOwnProperty也会返回false，那么我们可以结合in和hasPrototypeProperty这两个操作来确定它是否来自原型
+			function hasPrototypeProperty(obj, property) {
+				return !obj.hasOwnProperty(property) && (property in obj);
+			}
+			//由于in操作符只要通过对象检测就返回true，而hasOwnProperty是当属性存在实例中时才返回true，所以只要in返回true而hasOwnProprety返回false时就可以确定他是来自原型中的
+			console.log(hasPrototypeProperty(p1, 'eat'));					//true
 		}
-		const p1 = new Person('lisi', 35);
-		const p2 = new Person('zhangsan', 32);
-		console.log(p1.eat === p2.eat);						//false
-		*/
-		/**我们为这个对象加了一个sex属性，并让他的值等于男，接着我们创建了一个吃的方法，也就是说我们创建出的对象中sex属性和eat方法是共用的，但是我们每次调用构造函数创建对象时他都会为这些公共的属性和方法申请内存空间，这样就造成了资源的浪费，所以我们有了下面的这用创建对象的方法**/
-		//4：原型方式
-		function Person(name, age) {
-			this.name = name;
-			this.age = age;
-		}
-		Person.prototype.sex = "男";
-		Person.prototype.eat = function () {
-			console.log('吃');
-		}
-		const p1 = new Person('zhangsan', 24);
-		const p2 = new Person('lisi', 25);
-		//p1.eat();											//吃
-		//console.log(p1.eat === p2.eat);					//true
-		//这就是我们创建对象时用到的大多数方法，下面我们来说一下怎样判断一个对象中是否具有某些属性或方法，
-		//javascript中提供了一个检测某个属性是否属于该对象的运算符in
-		console.log('name' in p1);							//true
-		console.log('eat' in p1);							//true
-		//in运算符只检测属性或方法是否存在于对象中，对于他是来自原型中的还是实例中的他是分辨不出来的，当然在每个对象中都有一个hasOwnProperty方法来识别对象的属性或方法来自原型还是实例本身
-		console.log(Person.hasOwnProperty('name'));			//true
-		console.log(Person.hasOwnProperty('sex'));			//false
-		console.log(Person.hasOwnProperty('job'));			//false
-		//可以看到当某个属性或方法不存在时hasOwnProperty也会返回false，那么我们可以结合in和hasPrototypeProperty这两个操作来确定它是否来自原型
-		function hasPrototypeProperty(obj, property) {
-			return !obj.hasOwnProperty(property) && (property in obj);
-		}
-		//由于in操作符只要通过对象检测就返回true，而hasOwnProperty是当属性存在实例中时才返回true，所以只要in返回true而hasOwnProprety返回false时就可以确定他是来自原型中的
-		console.log(hasPrototypeProperty(p1, 'eat'));					//true
+		
 	</script>
 </head>
 <body>
